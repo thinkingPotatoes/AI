@@ -15,7 +15,7 @@ def predictMovieScore(movieId):
     movieId = req['movieId']
 
     model = joblib.load(config['model_path'])
-    pred_rating = model.predict(str(userId), str(movieId)).est
+    pred_rating = model.predict(userId, movieId).est
 
     result = {"userId": userId, "movieId": movieId, "rating": pred_rating}
     return result
