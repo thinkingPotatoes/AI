@@ -3,6 +3,9 @@
 *.csv
 /data
 
+# config
+.yaml
+
 # python
 __pycache__/
 
