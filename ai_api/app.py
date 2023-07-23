@@ -1,5 +1,5 @@
 from flask import Flask, request
-from AI.ai_core.sim_movies import recommendMovies
+from AI.ai_api.sim_movies import recommendMovies
 
 app=Flask(__name__)
 
