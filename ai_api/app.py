@@ -6,7 +6,7 @@ import yaml
 
 app=Flask(__name__)
 
-with open('../api_config.yaml', encoding='UTF8') as f:
+with open('AI/api_config.yaml', encoding='UTF8') as f:
     config = yaml.safe_load(f)
 
 @app.route("/rating/<userId>", methods=['POST'])
