@@ -32,9 +32,9 @@ def recommendSimMovies(userID):
     userId = req['userId']
     topN = req['topN']
 
-    results = recommendMovies(userId, topN)
+    result = recommendMovies(userId, topN)
 
-    result = {"userId": userId, "results": results}
+    result = {"userId": userId, "result": result}
     return result
 
 if __name__ == '__main__':
