@@ -22,7 +22,7 @@ def predictMovieScore(userId):
     for movieId in movieIds:
         pred_rating[movieId] = round(model.predict(userId, movieId).est, 1)
 
-    result = {"userId": userId, "rating": pred_rating}
+    result = {"userId": userId, "result": pred_rating}
     return result
 
 @app.route("/recommend/<userID>", methods=['POST'])
