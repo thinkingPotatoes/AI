@@ -1,5 +1,5 @@
 from flask import Flask, request
-from AI.ai_api.sim_movies import recommendMovies
+from sim_movies import recommendMovies
 
 import joblib
 import yaml
@@ -9,17 +9,20 @@ app=Flask(__name__)
 with open('../api_config.yaml', encoding='UTF8') as f:
     config = yaml.safe_load(f)
 
-@app.route("/rating/<movieId>", methods=['POST'])
-def predictMovieScore(movieId):
+@app.route("/rating/<userId>", methods=['POST'])
+def predictMovieScore(userId):
     req = request.get_json()
 
     userId = req['userId']
-    movieId = req['movieId']
+    movieIds = req['movieId']
 
     model = joblib.load(config['model_path'])
-    pred_rating = model.predict(userId, movieId).est
 
-    result = {"userId": userId, "movieId": movieId, "rating": pred_rating}
+    pred_rating = {}
+    for movieId in movieIds:
+        pred_rating[movieId] = round(model.predict(userId, movieId).est, 1)
+
+    result = {"userId": userId, "rating": pred_rating}
     return result
 
 @app.route("/recommend/<userID>", methods=['POST'])
