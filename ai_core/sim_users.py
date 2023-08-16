@@ -11,7 +11,7 @@ def find_n_neighbours(df, n):
     return df
 
 # Connection DB
-with open('../api_config.yaml', encoding='UTF8') as f:
+with open('AI/api_config.yaml', encoding='UTF8') as f:
     config = yaml.safe_load(f)
 
 user = config['database']['user']
@@ -20,7 +20,7 @@ host = config['database']['host']
 port = int(config['database']['port'])
 database = config['database']['database']
 
-engine = create_engine(f'mysql+pymysql://{user}:{password}@{host}:{port}/{database}', encoding='utf-8')
+engine = create_engine(f'mysql+pymysql://{user}:{password}@{host}:{port}/{database}', connect_args={'charset':'utf8'})
 conn = engine.connect()
 
 sql = 'SELECT * FROM ratings'
