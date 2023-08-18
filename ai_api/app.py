@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, make_response
 from .sim_movies import recommendMovies
 
 import joblib
