@@ -46,9 +46,6 @@ def recommendMovies(userId, topN):
     user_seen_movie = list(ratings[ratings['userId'] == userId]['movieId'])
     movieId_results = list(set(sim_seen_movie).difference(user_seen_movie))
 
-    if len(movieId_results) > topN:
-        movieId_results = random.sample(movieId_results, topN)
-
     # Extract Movie Info
     payload = json.dumps({
         "userId": userId,
