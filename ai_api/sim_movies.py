@@ -2,7 +2,7 @@ import pandas as pd
 import itertools
 import random
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 import yaml
 
 import requests
@@ -22,21 +22,21 @@ def connectDB(config):
     return conn
 
 def recommendMovies(config, userId):
-    conn = connectDB(config)
-    sim_user_sql = 'SELECT * FROM sim_user'
-    sim_user = pd.read_sql(sim_user_sql, conn, index_col='userId')
-    ratings_sql = 'SELECT * FROM ratings'
-    ratings = pd.read_sql(ratings_sql, conn)
+    db = connectDB(config)
 
-    print(sim_user)
+    sim_user_sql = 'SELECT * FROM sim_user where userId = "' + userId + '"' 
+    sim_user_df = pd.DataFrame(db.execute(text(sim_user_sql)).fetchall())
 
     sim_seen_movie = []
 
-    top_df = sim_user.loc[userId]
-    sim_users = list(top_df.values)
+    sim_user_df.drop(['userId'], axis=1, inplace=True)
+    sim_users = sim_user_df.values.tolist()
 
-    for i in sim_users:
-        user_rating = ratings[ratings['userId'] == i]
+    ratings_sql = 'SELECT * FROM ratings where userId in ' + str(tuple(sim_users[0]))
+    ratings_df = pd.DataFrame(db.execute(text(ratings_sql)).fetchall())
+
+    for i in sim_users[0]:
+        user_rating = ratings_df[ratings_df['userId'] == i]
         # Utilize ratings distribution of users of similar tastes
         user_rating_Q2 = user_rating['rating'].quantile(.5)
         # Extract movies rated higher than the value of Q2
@@ -44,7 +44,7 @@ def recommendMovies(config, userId):
 
     sim_seen_movie = list(itertools.chain(*sim_seen_movie))
 
-    user_seen_movie = list(ratings[ratings['userId'] == userId]['movieId'])
+    user_seen_movie = list(ratings_df[ratings_df['userId'] == userId]['movieId'])
     # Extract only recommended movies that user hasn't watched
     movieId_results = list(set(sim_seen_movie).difference(user_seen_movie))
 
@@ -64,9 +64,8 @@ def recommendMovies(config, userId):
     result = {}
     for movieId in movieId_results:
         try:
-            movie_df = pd.read_sql(title_sql, conn)
-            title_sql = 'SELECT title FROM movie where doc_id = "' + movieId + '"'
-            posterUrl_sql = 'SELECT posterUrl FROM movie where doc_id = "' + movieId + '"'
+            movie_sql = 'SELECT * FROM movie where doc_id = "' + movieId + '"'
+            movie_df = pd.DataFrame(db.execute(text(movie_sql)).fetchall())
             title = movie_df['title'].values[0]
             posterUrl = movie_df['posterUrl'].values[0]
         except:
