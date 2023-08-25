@@ -8,11 +8,8 @@ import yaml
 import requests
 import json
 
-def connectDB():
+def connectDB(config):
     # Connection DB
-    with open('Ai/api_config.yaml') as f:
-        config = yaml.safe_load(f)
-
     user = config['database']['user']
     password = config['database']['password']
     host = config['database']['host']
@@ -24,12 +21,14 @@ def connectDB():
 
     return conn
 
-def recommendMovies(userId, topN):
-    conn = connectDB()
+def recommendMovies(config, userId):
+    conn = connectDB(config)
     sim_user_sql = 'SELECT * FROM sim_user'
     sim_user = pd.read_sql(sim_user_sql, conn, index_col='userId')
     ratings_sql = 'SELECT * FROM ratings'
     ratings = pd.read_sql(ratings_sql, conn)
+
+    print(sim_user)
 
     sim_seen_movie = []
 
@@ -59,16 +58,17 @@ def recommendMovies(userId, topN):
         'Content-Type': 'application/json'
     }
 
-    response = requests.post("http://localhost:9000/rating/"+userId, headers=headers, data=payload)
+    response = requests.post(config['rating_url']+str(userId), headers=headers, data=payload)
     req_result = json.loads(response.text)
 
     result = {}
     for movieId in movieId_results:
         try:
+            movie_df = pd.read_sql(title_sql, conn)
             title_sql = 'SELECT title FROM movie where doc_id = "' + movieId + '"'
             posterUrl_sql = 'SELECT posterUrl FROM movie where doc_id = "' + movieId + '"'
-            title = pd.read_sql(title_sql, conn)['title'].values[0]
-            posterUrl = pd.read_sql(posterUrl_sql, conn)['posterUrl'].values[0]
+            title = movie_df['title'].values[0]
+            posterUrl = movie_df['posterUrl'].values[0]
         except:
             # Not exist posterUrl
             posterUrl = ""
