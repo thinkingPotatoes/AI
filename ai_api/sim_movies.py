@@ -39,8 +39,8 @@ def recommendMovies(userId, topN):
     for i in sim_users:
         user_rating = ratings[ratings['userId'] == i]
         # Utilize ratings distribution of users of similar tastes
-        user_rating_Q3 = user_rating['rating'].quantile(.75)
-        # Extract movies rated higher than the value of Q3
+        user_rating_Q2 = user_rating['rating'].quantile(.5)
+        # Extract movies rated higher than the value of Q2
         sim_seen_movie.append(list(user_rating[user_rating['rating'] >= user_rating_Q3].sort_values(ascending=False, by='rating')['movieId']))
 
     sim_seen_movie = list(itertools.chain(*sim_seen_movie))
