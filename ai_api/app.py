@@ -1,9 +1,9 @@
 from flask import Flask, request, make_response
 from .sim_movies import recommendMovies
 
-import joblib
 import yaml
 import json
+import pickle
 
 app=Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
@@ -18,7 +18,8 @@ def predictMovieScore(userId):
     userId = req['userId']
     movieIds = req['movieId']
 
-    model = joblib.load(config['model_path'])
+    with open(config['model_path'], 'rb') as f: 
+        model = pickle.load(f)
 
     pred_rating = {}
     for movieId in movieIds:
@@ -27,6 +28,7 @@ def predictMovieScore(userId):
     result = {"userId": userId, "result": pred_rating}
     result = json.dumps(result, ensure_ascii=False, indent=4)
     res = make_response(result)
+
     return res
 
 @app.route("/recommend/<userID>", methods=['POST'])
