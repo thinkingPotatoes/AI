@@ -36,9 +36,9 @@ def recommendSimMovies(userID):
     req = request.get_json()
 
     userId = req['userId']
-    topN = req['topN']
+    # topN = req['topN']
 
-    result = recommendMovies(userId, topN)
+    result = recommendMovies(config, userId)
 
     result = {"userId": userId, "result": result}
     result = json.dumps(result, ensure_ascii=False, indent=4)
