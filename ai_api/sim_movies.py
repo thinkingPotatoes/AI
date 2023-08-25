@@ -10,7 +10,7 @@ import json
 
 def connectDB():
     # Connection DB
-    with open('Ai/api_config.yaml', encoding='UTF8') as f:
+    with open('Ai/api_config.yaml') as f:
         config = yaml.safe_load(f)
 
     user = config['database']['user']
