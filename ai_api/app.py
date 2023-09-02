@@ -11,8 +11,8 @@ app.config['JSON_AS_ASCII'] = False
 with open('api_config.yaml', encoding='UTF8') as f:
     config = yaml.safe_load(f)
 
-@app.route("/rating/<userId>", methods=['POST'])
-def predictMovieScore(userId):
+@app.route("/rating", methods=['POST'])
+def predictMovieScore():
     req = request.get_json()
 
     userId = req['userId']
@@ -31,13 +31,11 @@ def predictMovieScore(userId):
 
     return res
 
-@app.route("/recommend/<userID>", methods=['POST'])
-def recommendSimMovies(userID):
+@app.route("/recommend", methods=['POST'])
+def recommendSimMovies():
     req = request.get_json()
 
     userId = req['userId']
-    # topN = req['topN']
-
     result = recommendMovies(config, userId)
 
     result = {"userId": userId, "result": result}

@@ -24,7 +24,7 @@ def connectDB(config):
 def recommendMovies(config, userId):
     db = connectDB(config)
 
-    sim_user_sql = 'SELECT * FROM sim_user where userId = "' + userId + '"' 
+    sim_user_sql = 'SELECT * FROM sim_user where userId = "' + str(userId) + '"' 
     sim_user_df = pd.DataFrame(db.execute(text(sim_user_sql)).fetchall())
 
     sim_seen_movie = []
@@ -58,8 +58,8 @@ def recommendMovies(config, userId):
         'Content-Type': 'application/json'
     }
 
-    response = requests.post(config['rating_url']+str(userId), headers=headers, data=payload)
-    req_result = json.loads(response.text)
+    response = requests.post(config['rating_url'], headers=headers, data=payload)
+    req_result = json.loads(str(response.text))
 
     result = {}
     for movieId in movieId_results:
