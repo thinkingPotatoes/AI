@@ -3,6 +3,10 @@
 *.csv
 /data
 
+# model
+/model
+*.pkl
+
 # config
 .yaml
 
