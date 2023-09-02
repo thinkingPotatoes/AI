@@ -1,6 +1,8 @@
 from flask import Flask, request, make_response
 from .sim_movies import recommendMovies
-from .extract_keywords import extractKeywords as keybert
+
+from ai_core.extract_keywords import extractKeywords as keybert
+from ai_core.predict_rating import ratingModel
 
 import yaml
 import json
@@ -30,6 +32,11 @@ def predictMovieScore():
     result = json.dumps(result, ensure_ascii=False, indent=4)
     res = make_response(result)
 
+    return res
+
+@app.route("/rating/train", methods=['POST'])
+def train_ratingModel():
+    res = ratingModel(config)
     return res
 
 @app.route("/recommend", methods=['POST'])
