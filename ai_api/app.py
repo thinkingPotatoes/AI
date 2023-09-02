@@ -1,5 +1,6 @@
 from flask import Flask, request, make_response
 from .sim_movies import recommendMovies
+from .extract_keywords import extractKeywords as keybert
 
 import yaml
 import json
@@ -39,6 +40,21 @@ def recommendSimMovies():
     result = recommendMovies(config, userId)
 
     result = {"userId": userId, "result": result}
+    result = json.dumps(result, ensure_ascii=False, indent=4)
+    res = make_response(result)
+    return res
+
+@app.route("/blogs/keyword/<articleId>", methods=['POST'])
+def extractKeywords(articleId):
+    req = request.get_json()
+
+    articleId = req['articleId']
+    review = req['review']
+
+    keywords = keybert(review)
+
+    result = {"articleId": articleId, "result": keywords}
+
     result = json.dumps(result, ensure_ascii=False, indent=4)
     res = make_response(result)
     return res
