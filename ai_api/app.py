@@ -1,5 +1,6 @@
 from flask import Flask, request, make_response
 from .sim_movies import recommendMovies
+from .inference_review import predict_block_review
 
 from ai_core.extract_keywords import extractKeywords as keybert
 from ai_core.predict_rating import ratingModel
@@ -22,7 +23,7 @@ def predictMovieScore():
     userId = req['userId']
     movieIds = req['movieId']
 
-    with open(config['model_path'], 'rb') as f: 
+    with open(config['model_path'], 'rb') as f:
         model = pickle.load(f)
 
     pred_rating = {}
@@ -71,6 +72,16 @@ def extractKeywords(articleId):
     result = json.dumps(result, ensure_ascii=False, indent=4)
     res = make_response(result)
     return res
+
+@app.route("/getReviewBlock", methods=['POST'])
+def classifyReviewHate():
+    req = request.get_json()
+    content = req['content']
+
+    isBlock = predict_block_review(content)
+
+    result = {"isBlock": isBlock}
+    return result
 
 if __name__ == '__main__':
     app.run(host="localhost", port="9000", debug=True)
