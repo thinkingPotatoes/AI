@@ -1,10 +1,10 @@
 from flask import Flask, request, make_response
 from .sim_movies import recommendMovies
-from ai_core.extract_keywords import extractKeywords as keybert
+from .extract_keywords import extractKeywords as keybert
 
-import joblib
 import yaml
 import json
+import pickle
 
 app=Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
@@ -12,30 +12,37 @@ app.config['JSON_AS_ASCII'] = False
 with open('api_config.yaml', encoding='UTF8') as f:
     config = yaml.safe_load(f)
 
-@app.route("/rating/<movieId>", methods=['POST'])
-def predictMovieScore(movieId):
+@app.route("/rating", methods=['POST'])
+def predictMovieScore():
     req = request.get_json()
 
     userId = req['userId']
-    movieId = req['movieId']
+    movieIds = req['movieId']
 
-    model = joblib.load(config['model_path'])
-    pred_rating = model.predict(userId, movieId).est
+    with open(config['model_path'], 'rb') as f: 
+        model = pickle.load(f)
 
-    result = {"userId": userId, "movieId": movieId, "rating": pred_rating}
-    return result
+    pred_rating = {}
+    for movieId in movieIds:
+        pred_rating[movieId] = round(model.predict(userId, movieId).est, 1)
 
-@app.route("/recommend/<userID>", methods=['POST'])
-def recommendSimMovies(userID):
+    result = {"userId": userId, "result": pred_rating}
+    result = json.dumps(result, ensure_ascii=False, indent=4)
+    res = make_response(result)
+
+    return res
+
+@app.route("/recommend", methods=['POST'])
+def recommendSimMovies():
     req = request.get_json()
 
     userId = req['userId']
-    topN = req['topN']
+    result = recommendMovies(config, userId)
 
-    results = recommendMovies(userId, topN)
-
-    result = {"userId": userId, "results": results}
-    return result
+    result = {"userId": userId, "result": result}
+    result = json.dumps(result, ensure_ascii=False, indent=4)
+    res = make_response(result)
+    return res
 
 @app.route("/blogs/keyword/<articleId>", methods=['POST'])
 def extractKeywords(articleId):

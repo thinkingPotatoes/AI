@@ -1,11 +1,11 @@
 import json
 import requests
 
-url = "http://localhost:9000/rating/302"
+url = "http://localhost:9000/rating"
 
 payload = json.dumps({
-    "userId": 196,
-    "movieId": 302
+    "userId": 302,
+    "movieId": ["A06376", "B00013"]
 })
 
 headers = {
