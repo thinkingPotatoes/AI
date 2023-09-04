@@ -32,7 +32,7 @@ def recommendMovies(config, userId):
     sim_user_df.drop(['userId'], axis=1, inplace=True)
     sim_users = sim_user_df.values.tolist()
 
-    ratings_sql = 'SELECT * FROM ratings where userId in ' + str(tuple(sim_users[0]))
+    ratings_sql = 'SELECT * FROM star_rating where userId in ' + str(tuple(sim_users[0]))
     ratings_df = pd.DataFrame(db.execute(text(ratings_sql)).fetchall())
 
     for i in sim_users[0]:
