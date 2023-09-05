@@ -6,14 +6,7 @@ from sqlalchemy import create_engine
 import yaml
 
 import time
-import logging
-
-logger = logging.getLogger(name='sim_users')
-logger.setLevel(logging.INFO)
-formatter = logging.Formatter('%(name)s - %(levelname)s - %(asctime)s - elapsed time : %(message)s')
-file_handler = logging.FileHandler('sim_users.log', mode='a')
-file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
+from ai_api.utils import createLogger
 
 def connectDB(config):
     # Connection DB
@@ -64,6 +57,7 @@ def sim_user_df(config):
     conn.close()
 
     end_time = str(round(time.time() - start_time, 4))
-    logger.info(end_time)
+    logger = createLogger("sim_users")
+    logger.info("elapsed time : " + end_time)
 
     return {"status" : 200}

@@ -8,17 +8,7 @@ import pickle
 import pandas as pd
 
 import time
-import logging
-
-logger = logging.getLogger(name='predict_rating')
-logger.setLevel(logging.INFO)
-formatter = logging.Formatter('%(name)s - %(levelname)s - %(asctime)s - RMSE & elapsed time : %(message)s')
-streamHandler = logging.StreamHandler()
-file_handler = logging.FileHandler('predict_rating.log', mode='a')
-streamHandler.setFormatter(formatter)
-file_handler.setFormatter(formatter)
-logger.addHandler(streamHandler)
-logger.addHandler(file_handler)
+from ai_api.utils import createLogger
     
 def connectDB(config):
     # Connection DB
@@ -55,6 +45,7 @@ def ratingModel(config):
     predictions = algo.test(testset)
     rmse = str(round(accuracy.rmse(predictions), 4))
     end_time = str(round(time.time() - start_time, 4))
-    logger.info(rmse + " & " + end_time)
+    logger = createLogger("predict_rating")
+    logger.info("RMSE & elapsed time : " + rmse + " & " + end_time)
 
     return {'status':200}
