@@ -5,6 +5,16 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sqlalchemy import create_engine
 import yaml
 
+import time
+import logging
+
+logger = logging.getLogger(name='sim_users')
+logger.setLevel(logging.INFO)
+formatter = logging.Formatter('%(name)s - %(levelname)s - %(asctime)s - elapsed time : %(message)s')
+file_handler = logging.FileHandler('sim_users.log', mode='a')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+
 def connectDB(config):
     # Connection DB
     user = config['database']['user']
@@ -24,7 +34,7 @@ def find_n_neighbours(df, n):
     return df
 
 def sim_user_df(config):
-    print("--- recommendSimMovies : train start ---")
+    start_time = time.time()
 
     conn, engine = connectDB(config)
 
@@ -53,6 +63,7 @@ def sim_user_df(config):
     sim_user_df.to_sql(name='sim_user', con=engine, if_exists='replace')
     conn.close()
 
-    print("--- recommendSimMovies : train complete ---")
+    end_time = str(round(time.time() - start_time, 4))
+    logger.info(end_time)
 
     return {"status" : 200}

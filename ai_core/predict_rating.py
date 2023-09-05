@@ -7,6 +7,19 @@ import pickle
 
 import pandas as pd
 
+import time
+import logging
+
+logger = logging.getLogger(name='predict_rating')
+logger.setLevel(logging.INFO)
+formatter = logging.Formatter('%(name)s - %(levelname)s - %(asctime)s - RMSE & elapsed time : %(message)s')
+streamHandler = logging.StreamHandler()
+file_handler = logging.FileHandler('predict_rating.log', mode='a')
+streamHandler.setFormatter(formatter)
+file_handler.setFormatter(formatter)
+logger.addHandler(streamHandler)
+logger.addHandler(file_handler)
+    
 def connectDB(config):
     # Connection DB
     user = config['database']['user']
@@ -21,6 +34,8 @@ def connectDB(config):
     return conn
 
 def ratingModel(config):
+    start_time = time.time()
+
     conn = connectDB(config)
 
     ratings_sql = 'SELECT * FROM star_rating'
@@ -36,5 +51,10 @@ def ratingModel(config):
 
     with open('./ai_core/model/movie_predict.pkl','wb') as f:
         pickle.dump(algo, f)
+
+    predictions = algo.test(testset)
+    rmse = str(round(accuracy.rmse(predictions), 4))
+    end_time = str(round(time.time() - start_time, 4))
+    logger.info(rmse + " & " + end_time)
 
     return {'status':200}
