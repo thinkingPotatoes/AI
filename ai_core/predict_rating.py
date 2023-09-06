@@ -7,6 +7,9 @@ import pickle
 
 import pandas as pd
 
+import time
+from ai_api.utils import createLogger
+    
 def connectDB(config):
     # Connection DB
     user = config['database']['user']
@@ -21,6 +24,8 @@ def connectDB(config):
     return conn
 
 def ratingModel(config):
+    start_time = time.time()
+
     conn = connectDB(config)
 
     ratings_sql = 'SELECT * FROM star_rating'
@@ -36,5 +41,11 @@ def ratingModel(config):
 
     with open('./ai_core/model/movie_predict.pkl','wb') as f:
         pickle.dump(algo, f)
+
+    predictions = algo.test(testset)
+    rmse = str(round(accuracy.rmse(predictions), 4))
+    end_time = str(round(time.time() - start_time, 4))
+    logger = createLogger("predict_rating")
+    logger.info("RMSE & elapsed time : " + rmse + " & " + end_time)
 
     return {'status':200}
