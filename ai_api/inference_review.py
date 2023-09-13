@@ -13,7 +13,7 @@ def predict_block_review(content):
     })
 
     isBlock = False
-    if len(outputs[0]) > 1 :
+    if type(outputs) == list:
         result = outputs[0][0]['label']
         # 악플 위험 높은 댓글: LABEL_0
         if result == "LABEL_0":
