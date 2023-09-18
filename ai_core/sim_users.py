@@ -61,3 +61,8 @@ def sim_user_df(config):
     logger.info("elapsed time : " + end_time)
 
     return {"status" : 200}
+
+if __name__ == "__main__":
+    with open('api_config.yaml', encoding='UTF8') as f:
+        config = yaml.safe_load(f)
+    sim_user_df(config)
