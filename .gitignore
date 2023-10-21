@@ -2,6 +2,15 @@
 *.json
 *.csv
 /data
+.txt
+
+# model
+/model
+*.pkl
+.log
+
+# config
+.yaml
 
 # python
 __pycache__/
