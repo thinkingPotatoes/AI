@@ -7,7 +7,7 @@ RUN apt-get install -y python3-dev build-essential python3 python3-pip python3-v
 COPY . /ai
 WORKDIR /ai
 
-RUN pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 EXPOSE 9000
 CMD ["python", "/ai/ai_api/app.py"]
